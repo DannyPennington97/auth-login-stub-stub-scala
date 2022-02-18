@@ -1,0 +1,9 @@
+# https://www.playframework.com/documentation/latest/ScalaI18N
+
+##############
+###  Home  ###
+##############
+home.h1 = Select your service
+
+home.button.quick = Quick login
+home.button.custom = Custom login
