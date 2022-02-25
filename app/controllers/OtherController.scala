@@ -23,7 +23,7 @@ class OtherController @Inject()(val controllerComponents: ControllerComponents,
       form => {
         logger.debug(s"User chose: $form.name")
         val config = acquireConfig(form.name)
-        val request = ws.url("http://localhost:9949/auth-login-stub/gg-sign-in/")
+        val request = ws.url("http://127.0.0.1:9949/auth-login-stub/gg-sign-in/")
           .withHttpHeaders(("Content-Type", "application/x-www-form-urlencoded"))
           .withFollowRedirects(false)
         request.post(config.rawQueryString).map { response =>
