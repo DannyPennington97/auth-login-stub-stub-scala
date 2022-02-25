@@ -1,15 +1,18 @@
 package models
 
+import java.net.URLEncoder
+
 import com.typesafe.config.Config
 import play.api.ConfigLoader
 
 import scala.util.{Failure, Success, Try}
 
 case class ServiceConfig(
+                          localport: String,
                           redirectUrl: String,
-                          credentialStrength: String = "Strong",
-                          confidenceLevel: String = "50",
-                          affinityGroup: String = "Individual",
+                          credentialStrength: String,
+                          confidenceLevel: String,
+                          affinityGroup: String,
                           enrolmentKey: Option[String] = None,
                           enrolmentIdentifierName0: Option[String] = None,
                           enrolmentIdentifierName1: Option[String] = None,
@@ -17,18 +20,34 @@ case class ServiceConfig(
                           enrolmentsIdentifierValue1: Option[String] = None
                         ) {
 
+  val enrolmentState = "Activated"
+  val authorityId = "1"
+  val localhost = s"http://localhost:$localport"
+  val runLocal = true
+
   def toQueryParams: List[(String, String)] = {
     List(
       ("redirectionUrl", redirectUrl),
       ("credentialStrength", credentialStrength),
       ("confidenceLevel", confidenceLevel),
       ("affinityGroup", affinityGroup),
-      ("enrolment[0].name", affinityGroup),
+      ("authorityId", "1"),
+      ("enrolment[0].name", enrolmentKey.getOrElse("")),
       ("enrolment[0].taxIdentifier[0].name", enrolmentIdentifierName0.getOrElse("")),
       ("enrolment[0].taxIdentifier[0].value", enrolmentsIdentifierValue0.getOrElse("")),
       ("enrolment[0].taxIdentifier[1].name", enrolmentIdentifierName1.getOrElse("")),
       ("enrolment[0].taxIdentifier[1].value", enrolmentsIdentifierValue1.getOrElse(""))
       )
+  }
+
+  def rawQueryString: String = {
+    val updatedUrl = URLEncoder.encode(if (runLocal) localhost + redirectUrl else redirectUrl)
+    println(s"redirecturl we feed: $updatedUrl")
+    s"redirectionUrl=$updatedUrl&credentialStrength=$credentialStrength&confidenceLevel=$confidenceLevel&affinityGroup=$affinityGroup" +
+      s"&enrolment[0].name=${enrolmentKey.getOrElse("")}&enrolment[0].state=$enrolmentState" +
+      s"&enrolment[0].taxIdentifier[0].name=${enrolmentIdentifierName0.getOrElse("")}&enrolment[0].taxIdentifier[0].value=${enrolmentsIdentifierValue0.getOrElse("")}" +
+      s"&enrolment[0].taxIdentifier[1].name=${enrolmentIdentifierName1.getOrElse("")}&enrolment[0].taxIdentifier[1].value=${enrolmentsIdentifierValue1.getOrElse("")}" +
+      s"&authorityId=$authorityId"
   }
 }
 
@@ -38,10 +57,11 @@ object ServiceConfig {
 
     val config = rootConfig.getConfig(path)
     ServiceConfig(
+      localport = config.getString("localport"),
       redirectUrl = config.getString("redirectUrl"),
-      credentialStrength = config.getString("credentialStrength"),
-      confidenceLevel = config.getString("confidenceLevel"),
-      affinityGroup = config.getString("affinityGroup"),
+      credentialStrength = config.getOptional("credentialStrength").getOrElse("strong"),
+      confidenceLevel = config.getOptional("confidenceLevel").getOrElse("50"),
+      affinityGroup = config.getOptional("affinityGroup").getOrElse("Individual"),
       enrolmentKey = config.getOptional("enrolment.key"),
       enrolmentIdentifierName0 = config.getOptional("enrolment.identifier0.name"),
       enrolmentIdentifierName1 = config.getOptional("enrolment.identifier1.name"),
