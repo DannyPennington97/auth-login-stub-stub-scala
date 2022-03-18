@@ -10,7 +10,12 @@ class HomeController @Inject()(val controllerComponents: MessagesControllerCompo
                                indexView: views.html.index) extends BaseController with I18nSupport with Logging {
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    val services = Array("ers-returns-frontend", "ers-checking-frontend")
+    val services = Array(
+      "ers-returns-frontend",
+      "ers-checking-frontend",
+      "request-corporation-tax-number-frontend",
+      "ras-frontend"
+    )
     Ok(indexView(services))
   }
 }
