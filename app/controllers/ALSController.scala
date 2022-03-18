@@ -26,13 +26,14 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
         Future.successful(Redirect(routes.HomeController.index()).flashing(("error" -> "error.badform")))
       },
       form => {
-        logger.debug(s"User chose: $form.name")
+        logger.debug(s"User chose: ${form.name}")
         alsService.acquireConfig(form.name).fold(ex => {
           logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
           Future(InternalServerError(errorView(ex.getMessage)))
         },
         serviceConfig =>
           alsConnector.callALS(serviceConfig).map { response =>
+            logger.debug(s"Response from ALS is: ${response.body}")
             Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
           })
       }
