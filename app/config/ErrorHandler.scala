@@ -16,7 +16,7 @@ class ErrorHandler extends HttpErrorHandler with Logging {
   }
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     logger.error(s"Something went wrong here m8. Exception: $exception")
-    Future.successful(InternalServerError(exception.getMessage + "\n" + exception.getStackTrace.mkString("/n")))
+    Future.successful(InternalServerError(exception.getMessage + "\n\n" + exception.getStackTrace.mkString("\n")))
   }
 
 }

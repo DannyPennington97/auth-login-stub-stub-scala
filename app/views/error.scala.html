@@ -1,0 +1,12 @@
+@this()
+@(error: String)(implicit messages: Messages, request: Request[AnyContent])
+
+@main("Auth-login-stub-stub") {
+
+    <h1 class="govuk-heading-l">
+        @messages("error.h1")
+    </h1>
+    <p class="govuk-body">
+        @error
+    </p>
+}

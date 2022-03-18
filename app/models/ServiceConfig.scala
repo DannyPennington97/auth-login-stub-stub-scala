@@ -42,7 +42,6 @@ case class ServiceConfig(
 
   def rawQueryString: String = {
     val updatedUrl = URLEncoder.encode(if (runLocal) localhost + redirectUrl else redirectUrl)
-    println(s"redirecturl we feed: $updatedUrl")
     s"redirectionUrl=$updatedUrl&credentialStrength=$credentialStrength&confidenceLevel=$confidenceLevel&affinityGroup=$affinityGroup" +
       s"&enrolment[0].name=${enrolmentKey.getOrElse("")}&enrolment[0].state=$enrolmentState" +
       s"&enrolment[0].taxIdentifier[0].name=${enrolmentIdentifierName0.getOrElse("")}&enrolment[0].taxIdentifier[0].value=${enrolmentsIdentifierValue0.getOrElse("")}" +

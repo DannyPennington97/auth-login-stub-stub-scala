@@ -10,8 +10,32 @@
 
     </head>
     <body class="govuk-template__body  js-enabled">
+        <header role="banner">
+            <div class="govuk-header hmrc-header " data-module="header">
+                <div class="govuk-header__container  govuk-width-container">
+                    <div class="govuk-header__content">
+                        <center>
+                            <a href="/" class="hmrc-header__service-name hmrc-header__service-name--linked">Auth-login-stub-stub</a>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="govuk-width-container ">
+            <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <div id="content">
+                            <article class="content-body">
 
-        @content
+                                @content
+
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
 
       <script src='@routes.Assets.versioned("javascripts/main.js")' type="text/javascript"></script>
       <script src='@routes.Assets.versioned("javascripts/hmrc-frontend-2.7.0.min.js")' type="text/javascript"></script>

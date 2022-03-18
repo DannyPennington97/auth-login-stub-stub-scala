@@ -34,3 +34,4 @@ Docker / maintainer := "daniel.pennington@digital.hmrc.gov.uk"
 dockerChmodType := DockerChmodType.UserGroupWriteExecute
 dockerBaseImage := "openjdk:11"
 dockerExposedPorts := Seq(4200)
+dockerEnvVars := Map("ALSHOST" -> "127.0.0.1")

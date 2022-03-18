@@ -7,3 +7,11 @@ home.h1 = Select your service
 
 home.button.quick = Quick login
 home.button.custom = Custom login
+
+################
+###  Errors  ###
+################
+#Double apostrophe as apostrophe is escape character!
+
+error.h1      = Yeah that didn''t work did it. Maybe this is why:
+error.badform = How did you mess that up? It''s literally a drop down selection. Shame on you (or me idk)

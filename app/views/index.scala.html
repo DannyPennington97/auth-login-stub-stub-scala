@@ -2,52 +2,43 @@
 @(services: Array[String])(implicit messages: Messages, request: Request[AnyContent])
 
 @main("Auth-login-stub-stub") {
-<header role="banner">
-  <div class="govuk-header hmrc-header " data-module="header">
-    <div class="govuk-header__container  govuk-width-container">
-      <div class="govuk-header__content">
-        <center>
-          <a href="/" class="hmrc-header__service-name hmrc-header__service-name--linked">Auth-login-stub-stub</a>
-        </center>
-      </div>
-    </div>
-  </div>
-</header>
 
-<div class="govuk-width-container ">
-  <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <div id="content">
-          <article class="content-body">
-            <header class="hmrc-page-heading">
-              <h1 class="govuk-heading-l">@messages("home.h1")</h1>
-            </header>
-            <form method="post" enctype="application/x-www-form-urlencoded" id="service-form">
-              @helper.CSRF.formField
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="service" style="display: none;">
-                  Pick service
-                </label>
-                <select class="govuk-select" id="service" name="serviceName">
-                  @for(service <- services) {
-                    <option value="@service">@service</option>
-                  }
-                </select>
-              </div>
-              <div id="buttons" class="govuk-button-group">
-                <button type="submit" class="govuk-button" data-module="govuk-button" formaction='@routes.OtherController.quickLogin()'>
-                  @messages("home.button.quick")
-                </button>
-                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" formaction='@routes.OtherController.customLogin()'>
-                  @messages("home.button.custom")
-                </button>
-              </div>
-            </form>
-          </article>
-        </div>
+  @if(request.flash.get("error").getOrElse("") == "error.badform") {
+    <div class="govuk-error-summary">
+      <h2 class="govuk-error-summary__title">
+        Error innit
+      </h2>
+      <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+          <li><a href="#service">@messages("error.badform")</a></li>
+        </ul>
       </div>
     </div>
-  </main>
-</div>
+
+  }
+  <header class="hmrc-page-heading">
+    <h1 class="govuk-heading-l">@messages("home.h1")</h1>
+  </header>
+  <form method="post" enctype="application/x-www-form-urlencoded" id="service-form">
+    @helper.CSRF.formField
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="service" style="display: none;">
+        Pick service
+      </label>
+      <select class="govuk-select" id="service" name="serviceName">
+        @for(service <- services) {
+          <option value="@service">@service</option>
+        }
+      </select>
+    </div>
+    <div id="buttons" class="govuk-button-group">
+      <button type="submit" class="govuk-button" data-module="govuk-button" formaction='@routes.ALSController.quickLogin()'>
+        @messages("home.button.quick")
+      </button>
+      <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" formaction='@routes.ALSController.customLogin()'>
+        @messages("home.button.custom")
+      </button>
+    </div>
+  </form>
+
 }
