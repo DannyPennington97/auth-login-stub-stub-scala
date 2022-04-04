@@ -1,0 +1,33 @@
+@this()
+@(services: Array[String])(implicit messages: Messages, request: Request[AnyContent])
+
+@main("Auth-login-stub-stub") {
+
+<header class="hmrc-page-heading">
+    <h1 class="govuk-heading-l">@messages("home.h1")</h1>
+</header>
+<div class="govuk-form-group">
+    <table class="govuk-table" style="width: 50em;">
+        <tbody>
+            @for(service <- services) {
+            <tr>
+                <td style="width: 15em;">
+                    <p class="govuk-body-lead">@service</p>
+                </td>
+                <td style="width: 3em;">
+                    <a class="govuk-button" data-module="govuk-button" href='@routes.ALSController.quickUrlLogin(service)' style="width: auto; height: 38px;">
+                        @messages("home.button.quick")
+                    </a>
+                </td>
+                <td style="width: 3em;">
+                    <a class="govuk-button govuk-button--secondary fixed" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
+                        @messages("home.button.custom")
+                    </a>
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}

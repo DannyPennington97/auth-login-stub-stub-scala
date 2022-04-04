@@ -7,7 +7,8 @@ import play.api.mvc._
 
 @Singleton
 class HomeController @Inject()(val controllerComponents: MessagesControllerComponents,
-                               indexView: views.html.index) extends BaseController with I18nSupport with Logging {
+                               indexView: views.html.index,
+                               serviceView: views.html.serviceSelect) extends BaseController with I18nSupport with Logging {
 
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     val services = Array(
@@ -17,5 +18,15 @@ class HomeController @Inject()(val controllerComponents: MessagesControllerCompo
       "ras-frontend"
     )
     Ok(indexView(services))
+  }
+
+  def newLayout(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    val services = Array(
+      "ers-returns-frontend",
+      "ers-checking-frontend",
+      "request-corporation-tax-number-frontend",
+      "ras-frontend"
+    )
+    Ok(serviceView(services))
   }
 }

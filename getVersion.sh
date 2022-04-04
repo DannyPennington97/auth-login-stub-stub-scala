@@ -1,0 +1,1 @@
+cat build.sbt | grep -Eo 'version := "([0-9a-zA-Z -_.]*)"' | cut -d \" -f 2

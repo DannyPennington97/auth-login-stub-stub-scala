@@ -3,7 +3,12 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /                           controllers.HomeController.index()
 
-POST    /quick-login                controllers.ALSController.quickLogin()
-POST    /custom-login               controllers.ALSController.customLogin()
+GET     /new-layout                 controllers.HomeController.newLayout()
+
+GET     /quick-login/:service       controllers.ALSController.quickUrlLogin(service: String)
+GET     /custom-login/:service      controllers.ALSController.customUrlLogin(service: String)
+
+POST    /quick-login-form           controllers.ALSController.quickLogin()
+POST    /custom-login-form          controllers.ALSController.customLogin()
 
 GET     /redirect                   controllers.Default.redirect(to = "https://www.playframework.com/")
