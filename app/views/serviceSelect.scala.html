@@ -15,12 +15,12 @@
                     <p class="govuk-body-lead">@service</p>
                 </td>
                 <td style="width: 3em;">
-                    <a class="govuk-button" data-module="govuk-button" href='@routes.ALSController.quickUrlLogin(service)' style="width: auto; height: 38px;">
+                    <a class="govuk-button" data-module="govuk-button" href='@routes.ALSController.quickUrlLogin(service)'>
                         @messages("home.button.quick")
                     </a>
                 </td>
                 <td style="width: 3em;">
-                    <a class="govuk-button govuk-button--secondary fixed" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
+                    <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
                         @messages("home.button.custom")
                     </a>
                 </td>

@@ -1,5 +1,5 @@
-IP := $(shell ./findip.sh)
-VERSION := $(shell ./getVersion.sh)
+IP := $(shell ./scripts/findip.sh)
+VERSION := $(shell ./scripts/getVersion.sh)
 
 build:
 	sbt docker:publishLocal
