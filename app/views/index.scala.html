@@ -35,9 +35,11 @@
       <button type="submit" class="govuk-button" data-module="govuk-button" formaction='@routes.ALSController.quickLogin()'>
         @messages("home.button.quick")
       </button>
-      <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" formaction='@routes.ALSController.customLogin()'>
-        @messages("home.button.custom")
-      </button>
+      @*
+      *<button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" formaction='@routes.ALSController.customLogin()'>
+      *  @messages("home.button.custom")
+      *</button>
+      *@
     </div>
   </form>
 

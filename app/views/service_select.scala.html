@@ -20,9 +20,16 @@
                     </a>
                 </td>
                 <td style="width: 3em;">
-                    <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
-                        @messages("home.button.custom")
-                    </a>
+                    @if(service == "ers-returns-frontend") {
+                        <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.ersSpecial()'>
+                            @messages("ers.button.custom")
+                        </a>
+                    }
+                    @*
+                    *<a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
+                    *    @messages("home.button.custom")
+                    *</a>
+                    *@
                 </td>
 
             </tr>

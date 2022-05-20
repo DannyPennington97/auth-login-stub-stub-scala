@@ -2,25 +2,27 @@ package controllers
 
 import connectors.AuthLoginStubConnector
 import javax.inject.{Inject, Singleton}
+import models.ERSParamsForm.ERSParamsForm
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Cookie, Request, Result}
 import models.ServiceForm
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSCookie
 import play.api.{Configuration, Logging}
-import services.AuthLoginStubService
+import services.ConfigService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ALSController @Inject()(val controllerComponents: ControllerComponents,
-                              alsService: AuthLoginStubService,
+                              configService: ConfigService,
                               alsConnector: AuthLoginStubConnector,
-                              errorView: views.html.error)
+                              errorView: views.html.error,
+                              ersSpecialView: views.html.ers_special)
                              (implicit val config: Configuration,
                                 implicit val ec: ExecutionContext) extends BaseController with Logging with I18nSupport  {
 
   private def getConfigAndRedirect(service: String)(implicit request: Request[AnyContent]): Future[Result] = {
-    alsService.acquireConfig(service).fold(ex => {
+    configService.acquireConfig(service).fold(ex => {
       logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
       Future(InternalServerError(errorView(ex.getMessage)))
     },
@@ -54,6 +56,28 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
 
   def customUrlLogin(service: String): Action[AnyContent] = Action { implicit request =>
     NotImplemented("Yeah this isn't ready yet either sorry")
+  }
+
+  def handleErsSpecial(): Action[AnyContent] = Action.async { implicit request =>
+    ERSParamsForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future(BadRequest(ersSpecialView(formWithErrors)))
+      },
+      ersParams => {
+        configService.acquireConfig("ers-returns-frontend").fold(ex => {
+          logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
+          Future(InternalServerError(errorView(ex.getMessage)))
+        },
+          serviceConfig => {
+            val newConfig = serviceConfig.copy(redirectUrl = ersParams.toRedirectUrl)
+            alsConnector.callALS(newConfig).map { response =>
+              logger.debug(s"Response from ALS is: ${response.body}")
+              Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
+            }
+          }
+        )
+      }
+    )
   }
 
   implicit class CoolCookie(cookie: WSCookie) {

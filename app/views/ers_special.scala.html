@@ -1,0 +1,77 @@
+@import models.ERSParams
+
+@this()
+@(ersParamsForm: Form[ERSParams])(implicit messages: Messages, request: Request[AnyContent])
+
+@main("Auth-login-stub-stub") {
+
+@if(ersParamsForm.hasErrors) {
+    <div class="govuk-error-summary">
+        <h2 class="govuk-error-summary__title">@messages("error.title")</h2>
+        <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+                @for(error <- ersParamsForm.errors) {
+                <li><a href="#@error.key">@error.key -> @messages(error.message)</a></li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<header class="hmrc-page-heading">
+    <h1 class="govuk-heading-l">@messages("ers.h1")</h1>
+</header>
+
+<p class="govuk-body-lead">
+    @messages("ers.subheading")
+</p>
+
+<div class="govuk-form-group">
+    <form action="@routes.ALSController.handleErsSpecial()" method="POST">
+        @helper.CSRF.formField
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="aoRef">
+                AO ref
+            </label>
+            <input class="govuk-input govuk-!-width-one-half" id="aoRef" name="aoRef" value='@ersParamsForm.data.get("aoRef").getOrElse("")'>
+        </div>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="taxYear">
+                Tax year
+            </label>
+            <input class="govuk-input govuk-!-width-one-half" id="taxYear" name="taxYear" value='@ersParamsForm.data.get("taxYear").getOrElse("")'>
+        </div>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="ersSchemeRef">
+                ERS scheme ref
+            </label>
+            <input class="govuk-input govuk-!-width-one-half" id="ersSchemeRef" name="ersSchemeRef" value='@ersParamsForm.data.get("ersSchemeRef").getOrElse("")'>
+        </div>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="schemeType">
+                Scheme type
+            </label>
+            <select class="govuk-select" id="schemeType" name="schemeType">
+                <option value="CSOP"  @if(ersParamsForm.data.getOrElse("schemeType", "").equals("CSOP"))  {selected}>CSOP</option>
+                <option value="EMI"   @if(ersParamsForm.data.getOrElse("schemeType", "").equals("EMI"))   {selected}>EMI</option>
+                <option value="SAYE"  @if(ersParamsForm.data.getOrElse("schemeType", "").equals("SAYE"))  {selected}>SAYE</option>
+                <option value="SIP"   @if(ersParamsForm.data.getOrElse("schemeType", "").equals("SIP"))   {selected}>SIP</option>
+                <option value="Other" @if(ersParamsForm.data.getOrElse("schemeType", "").equals("Other")) {selected}>Other</option>
+            </select>
+        </div>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="schemeName">
+                Scheme name
+            </label>
+            <input class="govuk-input govuk-!-width-one-half" id="schemeName" name="schemeName" value='@ersParamsForm.data.get("schemeName").getOrElse("")'>
+        </div>
+        <div class="govuk-form-group">
+            <label class="govuk-label" for="hmac">
+                HMAC
+            </label>
+            <input class="govuk-input govuk-!-width-one-half" id="hmac" name="hmac" value='@ersParamsForm.data.get("hmac").getOrElse("")'>
+        </div>
+        <button class="govuk-button" type="submit" style="margin-top: 32px;">Submit</button>
+    </form>
+</div>
+}

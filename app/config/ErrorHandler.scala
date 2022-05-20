@@ -10,7 +10,9 @@ import scala.concurrent.Future
 class ErrorHandler extends HttpErrorHandler with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
-    logger.error(s"Something went wrong here m8. Status: $statusCode, Message: $message")
+    if (!message.contains("Resource not found by Assets controller")){
+      logger.error(s"Something went wrong here m8. Status: $statusCode, Message: $message")
+    }
     Future.successful(InternalServerError("Oh no"))
 
   }

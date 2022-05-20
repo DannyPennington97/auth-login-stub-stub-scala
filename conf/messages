@@ -13,5 +13,15 @@ home.button.custom = Custom login
 ################
 #Double apostrophe required because apostrophe is escape character!
 
-error.h1      = Yeah that didn''t work did it. Maybe this is why:
-error.badform = How did you mess that up? It''s literally a drop down selection. Shame on you (or me idk)
+error.h1       = Yeah that didn''t work did it. Maybe this is why:
+error.badform  = How did you mess that up? It''s literally a drop down selection. Shame on you (or me idk)
+error.title    = You done messed up kid
+error.required = This field is required
+
+#######################
+### The ERS Special ###
+#######################
+
+ers.h1 = The ERS Special
+ers.subheading = You can modify these parameters to set up your login session
+ers.button.custom = Customise params
