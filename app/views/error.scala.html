@@ -1,5 +1,5 @@
 @this()
-@(error: String)(implicit messages: Messages, request: Request[AnyContent])
+@(error1: String, error2: String)(implicit messages: Messages, request: Request[AnyContent])
 
 @main("Auth-login-stub-stub") {
 
@@ -7,6 +7,9 @@
         @messages("error.h1")
     </h1>
     <p class="govuk-body">
-        @error
+        @error1
+    </p>
+    <p class="govuk-body">
+        @error2
     </p>
 }

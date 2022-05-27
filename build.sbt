@@ -5,9 +5,9 @@ organization := "org.dannypen"
 
 version := "0.0.1"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file("."))
 
-enablePlugins(DockerPlugin)
+enablePlugins(PlayScala, DockerPlugin)
 
 scalaVersion := "2.13.8"
 

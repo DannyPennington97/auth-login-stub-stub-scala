@@ -24,12 +24,15 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
   private def getConfigAndRedirect(service: String)(implicit request: Request[AnyContent]): Future[Result] = {
     configService.acquireConfig(service).fold(ex => {
       logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
-      Future(InternalServerError(errorView(ex.getMessage)))
+      Future(InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n"))))
     },
       serviceConfig =>
         alsConnector.callALS(serviceConfig).map { response =>
           logger.debug(s"Response from ALS is: ${response.body}")
           Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
+        }.recover { ex =>
+          logger.error("Call to ALS failed, is it definitely running???")
+          InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n")))
         })
   }
 
@@ -66,7 +69,7 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
       ersParams => {
         configService.acquireConfig("ers-returns-frontend").fold(ex => {
           logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
-          Future(InternalServerError(errorView(ex.getMessage)))
+          Future(InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n"))))
         },
           serviceConfig => {
             val newConfig = serviceConfig.copy(redirectUrl = ersParams.toRedirectUrl)

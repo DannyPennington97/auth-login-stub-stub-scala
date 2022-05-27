@@ -3,35 +3,26 @@ package controllers
 import javax.inject.{Inject, Singleton}
 import models.ERSParams
 import models.ERSParamsForm.ERSParamsForm
-import play.api.Logging
+import play.api.{Configuration, Logging}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 import services.ConfigService
 
 @Singleton
 class HomeController @Inject()(val controllerComponents: MessagesControllerComponents,
+                               config: Configuration,
                                configService: ConfigService,
                                indexView: views.html.index,
                                serviceView: views.html.service_select,
                                ersSpecialView: views.html.ers_special) extends BaseController with I18nSupport with Logging {
 
+  val services: Seq[String] = config.get[Seq[String]]("supportedServices")
+
   def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    val services = Array(
-      "ers-returns-frontend",
-      "ers-checking-frontend",
-      "request-corporation-tax-number-frontend",
-      "ras-frontend"
-    )
     Ok(indexView(services))
   }
 
   def newLayout(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-    val services = Array(
-      "ers-returns-frontend",
-      "ers-checking-frontend",
-      "request-corporation-tax-number-frontend",
-      "ras-frontend"
-    )
     Ok(serviceView(services))
   }
 
