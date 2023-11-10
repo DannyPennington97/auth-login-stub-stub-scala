@@ -25,3 +25,11 @@ error.required = This field is required
 ers.h1 = The ERS Special
 ers.subheading = You can modify these parameters to set up your login session
 ers.button.custom = Customise params
+
+##############
+### Trusts ###
+##############
+
+trusts.h1 = Welcome to the cool Trusts page
+trusts.subheading = You can modify these parameters to set up your login session
+trusts.button.custom = Customise for maintain

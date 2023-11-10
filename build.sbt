@@ -3,7 +3,7 @@ import com.typesafe.sbt.packager.docker.DockerChmodType
 name := """auth-login-stub-stub-scala"""
 organization := "org.dannypen"
 
-version := "0.0.1"
+version := "0.0.2"
 
 lazy val root = (project in file("."))
 

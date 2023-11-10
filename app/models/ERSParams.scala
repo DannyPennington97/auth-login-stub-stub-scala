@@ -23,12 +23,12 @@ object ERSParamsForm {
 
   val ERSParamsForm: Form[ERSParams] = Form(
     mapping(
-      "aoRef" -> nonEmptyText,
-      "taxYear" -> text,
+      "aoRef"        -> nonEmptyText,
+      "taxYear"      -> text,
       "ersSchemeRef" -> text,
-      "schemeType" -> text,
-      "schemeName" -> text,
-      "hmac" -> text
+      "schemeType"   -> text,
+      "schemeName"   -> text,
+      "hmac"         -> text
     )(ERSParams.apply)(ERSParams.unapply)
 
   )

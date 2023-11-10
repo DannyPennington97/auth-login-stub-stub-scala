@@ -2,10 +2,10 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 import models.ServiceConfig
-import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.libs.ws.WSClient
 import play.api.{Configuration, Logging}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class AuthLoginStubConnector @Inject()(ws: WSClient)
@@ -19,6 +19,7 @@ class AuthLoginStubConnector @Inject()(ws: WSClient)
       .withHttpHeaders(("Content-Type", "application/x-www-form-urlencoded"))
       .withFollowRedirects(false)
 
+    //println(serviceConfig.rawQueryString)
     request.post(serviceConfig.rawQueryString)
   }
 

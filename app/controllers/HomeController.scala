@@ -1,8 +1,9 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-import models.ERSParams
+import models.{ERSParams, TrustsParams}
 import models.ERSParamsForm.ERSParamsForm
+import models.TrustsParamsForm.TrustsParamsForm
 import play.api.{Configuration, Logging}
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -14,7 +15,8 @@ class HomeController @Inject()(val controllerComponents: MessagesControllerCompo
                                configService: ConfigService,
                                indexView: views.html.index,
                                serviceView: views.html.service_select,
-                               ersSpecialView: views.html.ers_special) extends BaseController with I18nSupport with Logging {
+                               ersSpecialView: views.html.ers_special,
+                               trustsSpecialView: views.html.trusts) extends BaseController with I18nSupport with Logging {
 
   val services: Seq[String] = config.get[Seq[String]]("supportedServices")
 
@@ -37,5 +39,10 @@ class HomeController @Inject()(val controllerComponents: MessagesControllerCompo
       val form = ERSParamsForm.fill(ERSParams(redirectParams(0), redirectParams(1), redirectParams(2), redirectParams(3), redirectParams(4), redirectParams(5)))
       Ok(ersSpecialView(form))
     }.getOrElse(InternalServerError("Who would've guessed this would break"))
+  }
+
+  def trustsSpecial(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+    Ok(trustsSpecialView(TrustsParamsForm.fill(TrustsParams("org", "taxable", "1000000001"))))
+
   }
 }

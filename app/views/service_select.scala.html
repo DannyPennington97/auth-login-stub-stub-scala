@@ -25,6 +25,11 @@
                             @messages("ers.button.custom")
                         </a>
                     }
+                    @if(service == "trusts") {
+                        <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.trustsSpecial()'>
+                            @messages("trusts.button.custom")
+                        </a>
+                    }
                     @*
                     *<a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
                     *    @messages("home.button.custom")

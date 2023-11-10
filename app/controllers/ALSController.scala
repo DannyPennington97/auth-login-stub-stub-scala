@@ -1,10 +1,12 @@
 package controllers
 
 import connectors.AuthLoginStubConnector
+
 import javax.inject.{Inject, Singleton}
 import models.ERSParamsForm.ERSParamsForm
+import models.TrustsParamsForm.TrustsParamsForm
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Cookie, Request, Result}
-import models.ServiceForm
+import models.{ServiceForm, TrustsParams}
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSCookie
 import play.api.{Configuration, Logging}
@@ -17,7 +19,8 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
                               configService: ConfigService,
                               alsConnector: AuthLoginStubConnector,
                               errorView: views.html.error,
-                              ersSpecialView: views.html.ers_special)
+                              ersSpecialView: views.html.ers_special,
+                              trustsSpecialView: views.html.trusts)
                              (implicit val config: Configuration,
                                 implicit val ec: ExecutionContext) extends BaseController with Logging with I18nSupport  {
 
@@ -28,7 +31,7 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
     },
       serviceConfig =>
         alsConnector.callALS(serviceConfig).map { response =>
-          logger.debug(s"Response from ALS is: ${response.body}")
+          //logger.debug(s"Response from ALS is: ${response.body}")
           Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
         }.recover { ex =>
           logger.error("Call to ALS failed, is it definitely running???")
@@ -73,6 +76,45 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
         },
           serviceConfig => {
             val newConfig = serviceConfig.copy(redirectUrl = ersParams.toRedirectUrl)
+            alsConnector.callALS(newConfig).map { response =>
+              logger.debug(s"Response from ALS is: ${response.body}")
+              Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
+            }
+          }
+        )
+      }
+    )
+  }
+
+  def handleTrustsSpecial(): Action[AnyContent] = Action.async { implicit request =>
+    TrustsParamsForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future(BadRequest(trustsSpecialView(formWithErrors)))
+      },
+      trustsParams => {
+        configService.acquireConfig("trusts").fold(ex => {
+          logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
+          Future(InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n"))))
+        },
+          serviceConfig => {
+            val newConfig = trustsParams.agentOrOrg match {
+              case "agent" =>
+                serviceConfig.copy(
+                  affinityGroup = "Agent",
+                  enrolmentKey = Some("HMRC-AS-AGENT"),
+                  enrolmentIdentifierName0 = Some("AgentReferenceNumber"),
+                  enrolmentsIdentifierValue0 = Some("SARN1234567"),
+                  delegatedEnrolmentKey = if (trustsParams.taxableOrNonTaxable == "taxable") {Some("HMRC-TERS-ORG")} else {Some("HMRC-TERSNT-ORG")},
+                  delegatedEnrolmentName0 = if (trustsParams.taxableOrNonTaxable == "taxable") {Some("SAUTR")} else {Some("URN")},
+                  delegatedEnrolmentValue0 = Some(trustsParams.UTRorURN)
+                )
+              case "org" =>
+                serviceConfig.copy(
+                  enrolmentKey = if (trustsParams.taxableOrNonTaxable == "taxable") {Some("HMRC-TERS-ORG")} else {Some("HMRC-TERSNT-ORG")},
+                  enrolmentIdentifierName0 = if (trustsParams.taxableOrNonTaxable == "taxable") {Some("SAUTR")} else {Some("URN")},
+                  enrolmentsIdentifierValue0 = Some(trustsParams.UTRorURN)
+                )
+            }
             alsConnector.callALS(newConfig).map { response =>
               logger.debug(s"Response from ALS is: ${response.body}")
               Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
