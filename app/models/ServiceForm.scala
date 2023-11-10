@@ -7,7 +7,8 @@ object ServiceForm {
 
   val serviceForm: Form[Service] = Form(
     mapping(
-      "serviceName" -> text
+      "serviceName"  -> text,
+      "environment"  -> text
     )(Service.apply)(Service.unapply)
   )
 

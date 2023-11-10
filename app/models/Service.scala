@@ -1,3 +1,3 @@
 package models
 
-case class Service(name: String)
+case class Service(serviceName: String, environment: String = "local")

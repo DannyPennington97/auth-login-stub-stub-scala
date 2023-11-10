@@ -6,7 +6,7 @@ import javax.inject.{Inject, Singleton}
 import models.ERSParamsForm.ERSParamsForm
 import models.TrustsParamsForm.TrustsParamsForm
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Cookie, Request, Result}
-import models.{ServiceForm, TrustsParams}
+import models.{Service, ServiceForm, TrustsParams}
 import play.api.i18n.I18nSupport
 import play.api.libs.ws.WSCookie
 import play.api.{Configuration, Logging}
@@ -24,15 +24,20 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
                              (implicit val config: Configuration,
                                 implicit val ec: ExecutionContext) extends BaseController with Logging with I18nSupport  {
 
-  private def getConfigAndRedirect(service: String)(implicit request: Request[AnyContent]): Future[Result] = {
-    configService.acquireConfig(service).fold(ex => {
+  private def getConfigAndRedirect(service: Service)(implicit request: Request[AnyContent]): Future[Result] = {
+    configService.acquireConfig(service.serviceName).fold(ex => {
       logger.error(s"Invalid config key provided. Message is: ${ex.getMessage}")
       Future(InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n"))))
     },
       serviceConfig =>
-        alsConnector.callALS(serviceConfig).map { response =>
-          //logger.debug(s"Response from ALS is: ${response.body}")
-          Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
+        alsConnector.callALS(serviceConfig, service.environment).map { response =>
+          //logger.debug(s"Response from ALS is: ${response.body}\n")
+          //logger.debug(s"Status from ALS is: ${response.status}\n")
+          //logger.debug(s"Headers from ALS are: ${response.headers}")
+          //logger.debug(s"Cookies from ALS are: ${response.cookies}")
+          val res = Redirect(response.header("location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
+          logger.warn(s"${res.newCookies.toString()}")
+          res
         }.recover { ex =>
           logger.error("Call to ALS failed, is it definitely running???")
           InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n")))
@@ -41,13 +46,14 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
 
   def quickLogin(): Action[AnyContent] = Action.async { implicit request =>
     ServiceForm.serviceForm.bindFromRequest().fold(
-      _ => {
+      errors => {
+        logger.error(errors.toString)
         logger.warn("User didn't pick a service somehow???")
-        Future.successful(Redirect(routes.HomeController.index()).flashing(("error" -> "error.badform")))
+        Future.successful(Redirect(routes.HomeController.newLayout()).flashing(("error" -> "error.badform")))
       },
-      form => {
-        logger.debug(s"User chose: ${form.name}")
-        getConfigAndRedirect(form.name)
+      service => {
+        logger.debug(s"User chose: ${service.serviceName}, ${service.environment}")
+        getConfigAndRedirect(service)
       }
     )
   }
@@ -56,16 +62,16 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
     NotImplemented("Yeah this isn't ready yet sorry")
   }
 
-  def quickUrlLogin(service: String): Action[AnyContent] = Action.async { implicit request =>
-    getConfigAndRedirect(service)
-  }
+//  def quickUrlLogin(service: String): Action[AnyContent] = Action.async { implicit request =>
+  //  getConfigAndRedirect(service)
+  //}
 
   def customUrlLogin(service: String): Action[AnyContent] = Action { implicit request =>
     NotImplemented("Yeah this isn't ready yet either sorry")
   }
 
   def handleErsSpecial(): Action[AnyContent] = Action.async { implicit request =>
-    ERSParamsForm.bindFromRequest.fold(
+    ERSParamsForm.bindFromRequest().fold(
       formWithErrors => {
         Future(BadRequest(ersSpecialView(formWithErrors)))
       },
@@ -76,7 +82,7 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
         },
           serviceConfig => {
             val newConfig = serviceConfig.copy(redirectUrl = ersParams.toRedirectUrl)
-            alsConnector.callALS(newConfig).map { response =>
+            alsConnector.callALS(newConfig, "local").map { response =>  //TODO make this work with env in form also
               logger.debug(s"Response from ALS is: ${response.body}")
               Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
             }
@@ -87,7 +93,7 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
   }
 
   def handleTrustsSpecial(): Action[AnyContent] = Action.async { implicit request =>
-    TrustsParamsForm.bindFromRequest.fold(
+    TrustsParamsForm.bindFromRequest().fold(
       formWithErrors => {
         Future(BadRequest(trustsSpecialView(formWithErrors)))
       },
@@ -115,7 +121,7 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
                   enrolmentsIdentifierValue0 = Some(trustsParams.UTRorURN)
                 )
             }
-            alsConnector.callALS(newConfig).map { response =>
+            alsConnector.callALS(newConfig, "local").map { response => //TODO make this work with env in form also
               logger.debug(s"Response from ALS is: ${response.body}")
               Redirect(response.header("Location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
             }

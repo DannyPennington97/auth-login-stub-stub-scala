@@ -6,40 +6,76 @@
 <header class="hmrc-page-heading">
     <h1 class="govuk-heading-l">@messages("home.h1")</h1>
 </header>
-<div class="govuk-form-group">
-    <table class="govuk-table" style="width: 50em;">
-        <tbody>
-            @for(service <- services) {
-            <tr>
-                <td style="width: 15em;">
-                    <p class="govuk-body-lead">@service</p>
-                </td>
-                <td style="width: 3em;">
-                    <a class="govuk-button" data-module="govuk-button" href='@routes.ALSController.quickUrlLogin(service)'>
-                        @messages("home.button.quick")
-                    </a>
-                </td>
-                <td style="width: 3em;">
-                    @if(service == "ers-returns-frontend") {
-                        <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.ersSpecial()'>
-                            @messages("ers.button.custom")
-                        </a>
-                    }
-                    @if(service == "trusts") {
-                        <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.trustsSpecial()'>
-                            @messages("trusts.button.custom")
-                        </a>
-                    }
-                    @*
-                    *<a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
-                    *    @messages("home.button.custom")
-                    *</a>
-                    *@
-                </td>
+<h2>Environment</h2>
+<form action="@routes.ALSController.quickLogin()" method="POST">
+    @helper.CSRF.formField
+    <div class="govuk-form-group">
+        <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+                <input type="radio" class="govuk-radios__input" id="org" name="environment" value='local' checked>
+                <label class="govuk-label govuk-radios__label" for="org">
+                    Local
+                </label>
+            </div>
+            <div class="govuk-radios__item">
+                <input type="radio" class="govuk-radios__input" id="qa" name="environment" value='qa' >
+                <label class="govuk-label govuk-radios__label" for="qa">
+                    QA
+                </label>
+            </div>
+            <div class="govuk-radios__item">
+                <input type="radio" class="govuk-radios__input" id="staging" name="environment" value='staging' >
+                <label class="govuk-label govuk-radios__label" for="staging">
+                    Staging
+                </label>
+            </div>
+        </div>
+    </div>
 
-            </tr>
-            }
-        </tbody>
-    </table>
-</div>
+    <div class="govuk-form-group">
+        <table class="govuk-table" style="width: 50em;">
+            <tbody>
+                @for(service <- services) {
+                <tr>
+                    <td style="width: 15em;">
+                        <p class="govuk-body-lead">@service</p>
+                    </td>
+                    <td style="width: 3em;">
+                        @*
+                        *<a class="govuk-button" data-module="govuk-button" href='@routes.ALSController.quickUrlLogin(service)'>
+                        *    @messages("home.button.quick")
+                        *</a>
+                        *@
+                        <div class="govuk-radios__item">
+                            <input type="radio" class="govuk-radios__input" id="@service" name="serviceName" value='@service'>
+                            <label class="govuk-label govuk-radios__label" for="@service">
+                                @service
+                            </label>
+                        </div>
+                    </td>
+                    <td style="width: 3em;">
+                        @if(service == "ers-returns-frontend") {
+                            <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.ersSpecial()'>
+                                @messages("ers.button.custom")
+                            </a>
+                        }
+                        @if(service == "trusts") {
+                            <a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.HomeController.trustsSpecial()'>
+                                @messages("trusts.button.custom")
+                            </a>
+                        }
+                        @*
+                        *<a class="govuk-button govuk-button--secondary" data-module="govuk-button" href='@routes.ALSController.customUrlLogin(service)'>
+                        *    @messages("home.button.custom")
+                        *</a>
+                        *@
+                    </td>
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <button class="govuk-button" type="submit" style="margin-top: 32px;">Submit</button>
+</form>
 }

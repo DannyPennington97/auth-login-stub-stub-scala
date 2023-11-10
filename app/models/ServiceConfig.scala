@@ -23,10 +23,10 @@ case class ServiceConfig(
                           delegatedEnrolmentValue0: Option[String] = None,
                         ) {
 
-  val enrolmentState = "Activated"
-  val authorityId = "1"
-  val localhost = s"http://localhost:$localport"
-  val runLocal = true
+  val localhost      = s"http://localhost:$localport"
+  val localBaseUrl   = "http://localhost:9949"
+  val stagingBaseUrl = "https://www.staging.tax.service.gov.uk"
+  val qaBaseUrl      = "https://www.qa.tax.service.gov.uk"
 
   def toQueryParams: List[(String, String)] = {
     List(
@@ -46,16 +46,22 @@ case class ServiceConfig(
       )
   }
 
-  def rawQueryString: String = {
-    val updatedUrl = URLEncoder.encode(if (runLocal) localhost + redirectUrl else redirectUrl)
+  def rawQueryString(environment: String): String = {
+    val baseUrl = environment match {
+      case "staging" => stagingBaseUrl
+      case "qa" => qaBaseUrl
+      case _ => localhost
+    }
+
+    val updatedUrl = URLEncoder.encode(baseUrl + redirectUrl, "UTF-8")
 
     s"redirectionUrl=$updatedUrl&credentialStrength=$credentialStrength&confidenceLevel=$confidenceLevel&affinityGroup=$affinityGroup" +
-      s"&enrolment[0].name=${enrolmentKey.getOrElse("")}&enrolment[0].state=$enrolmentState" +
+      s"&enrolment[0].name=${enrolmentKey.getOrElse("")}&enrolment[0].state=Activated" +
       s"&enrolment[0].taxIdentifier[0].name=${enrolmentIdentifierName0.getOrElse("")}&enrolment[0].taxIdentifier[0].value=${enrolmentsIdentifierValue0.getOrElse("")}" +
       s"&enrolment[0].taxIdentifier[1].name=${enrolmentIdentifierName1.getOrElse("")}&enrolment[0].taxIdentifier[1].value=${enrolmentsIdentifierValue1.getOrElse("")}" +
       s"&delegatedEnrolment[0].key=${delegatedEnrolmentKey.getOrElse("")}&delegatedEnrolment[0].taxIdentifier[0].name=${delegatedEnrolmentName0.getOrElse("")}" +
       s"&delegatedEnrolment[0].taxIdentifier[0].value=${delegatedEnrolmentValue0.getOrElse("")}&delegatedEnrolment[0].delegatedAuthRule=trust-auth" +
-      s"&authorityId=$authorityId"
+      s"&authorityId=1"
   }
 }
 
