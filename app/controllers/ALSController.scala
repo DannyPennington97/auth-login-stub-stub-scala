@@ -31,13 +31,11 @@ class ALSController @Inject()(val controllerComponents: ControllerComponents,
     },
       serviceConfig =>
         alsConnector.callALS(serviceConfig, service.environment).map { response =>
-          //logger.debug(s"Response from ALS is: ${response.body}\n")
+          logger.debug(s"Response from ALS is: ${response}\n")
           //logger.debug(s"Status from ALS is: ${response.status}\n")
           //logger.debug(s"Headers from ALS are: ${response.headers}")
           //logger.debug(s"Cookies from ALS are: ${response.cookies}")
-          val res = Redirect(response.header("location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
-          logger.warn(s"${res.newCookies.toString()}")
-          res
+          Redirect(response.header("location").get).withCookies(response.cookies.toSeq.map(_.toPlayCookie): _*)
         }.recover { ex =>
           logger.error("Call to ALS failed, is it definitely running???")
           InternalServerError(errorView(ex.getMessage, ex.getStackTrace.mkString("\n")))

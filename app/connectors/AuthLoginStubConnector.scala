@@ -25,7 +25,7 @@ class AuthLoginStubConnector @Inject()(ws: WSClient)
     println(s"postUrl: $postUrl")
 
     val request = ws.url(postUrl)
-      .withHttpHeaders(("Content-Type", "application/x-www-form-urlencoded"))
+      .withHttpHeaders(("Content-Type", "application/x-www-form-urlencoded"), ("User-Agent", "ALSS"))
       .withFollowRedirects(false)
 
     println(s"formUrlEncodedBody is: ${serviceConfig.rawQueryString(environment)}")
@@ -33,8 +33,6 @@ class AuthLoginStubConnector @Inject()(ws: WSClient)
   }
 
 }
-
-
 
 /*
 This worked at some point?

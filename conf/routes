@@ -18,3 +18,5 @@ GET     /trusts-special             controllers.HomeController.trustsSpecial()
 POST    /trusts-special             controllers.ALSController.handleTrustsSpecial()
 
 GET     /redirect                   controllers.Default.redirect(to = "https://www.playframework.com/")
+
+GET     /testo                      controllers.ALAController.getTokenAndShow()
